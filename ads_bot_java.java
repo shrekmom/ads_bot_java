@@ -15,6 +15,9 @@ class ads_bot_java {
   public static void main(String[] args) throws Exception {
     String ip1 = "127.0.0.1";
     String ip2 = "0.0.0.0";
+
+    String local = "localhost";
+    String thing = "::1";
     
     
     cleardir();
@@ -22,7 +25,7 @@ class ads_bot_java {
     combineFiles();
     cleardir();
     String ad_str = convertString();
-    String ad_str_imrpv = removeunwanted(ad_str, ip1, ip2);
+    String ad_str_imrpv = removeunwanted(ad_str, ip1, ip2, local, thing);
     finallist(ad_str_imrpv);
   }
 
@@ -63,10 +66,12 @@ class ads_bot_java {
       }
     }
   }
-  public static String removeunwanted(String x, String y, String z) {
+  public static String removeunwanted(String x, String y, String z, String a, String b) {
     x = x.replaceAll("(?m)^#.*", "");
     x = x.replaceAll(y, "");
     x = x.replaceAll(z, "");
+    x = x.replaceAll(a, "");
+    x = x.replaceAll(b, "");
     String t = x.replaceAll("(?m)^[ \t]*\r?\n", "");
     return t;
   }
