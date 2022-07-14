@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.nio.file.StandardCopyOption;
 import java.io.*;
 import java.util.*;
+import java.util.HashSet;
 
 class ads_bot_java {
   public static void main(String[] args) throws Exception {
@@ -18,8 +19,9 @@ class ads_bot_java {
 
     String local = "localhost";
     String thing = "::1";
-    
-    
+
+    String smodge = "ads_list.txt";
+
     cleardir();
     downloadFiles();
     combineFiles();
@@ -27,6 +29,13 @@ class ads_bot_java {
     String ad_str = convertString();
     String ad_str_imrpv = removeunwanted(ad_str, ip1, ip2, local, thing);
     finallist(ad_str_imrpv);
+    removeduplicate();
+    deletefile(smodge);
+  }
+
+  public static void deletefile(String x){
+    File myObj = new File(x); 
+    myObj.delete();
   }
 
   public static void cleardir() {
@@ -38,15 +47,17 @@ class ads_bot_java {
       }
     }
   }
-  public static void finallist(String x) throws Exception{
-    try (PrintWriter out = new PrintWriter("ads_final_list.txt")) {
+
+  public static void finallist(String x) throws Exception {
+    try (PrintWriter out = new PrintWriter("ads_list.txt")) {
       out.println(x);
+    }
   }
-  }
+
   public static void combineFiles() throws IOException {
     File dir = new File("text_files");
 
-    try (PrintWriter pw = new PrintWriter("ads_final_list.txt")) {
+    try (PrintWriter pw = new PrintWriter("ads_list.txt")) {
       String[] fileNames = dir.list();
 
       for (String fileName : fileNames) {
@@ -66,26 +77,53 @@ class ads_bot_java {
       }
     }
   }
+
   public static String removeunwanted(String x, String y, String z, String a, String b) {
+
     x = x.replaceAll("(?m)^#.*", "");
     x = x.replaceAll(y, "");
     x = x.replaceAll(z, "");
     x = x.replaceAll(a, "");
     x = x.replaceAll(b, "");
     String t = x.replaceAll("(?m)^[ \t]*\r?\n", "");
+
     return t;
   }
+
   public static String convertString() {
-    Path path = Paths.get("ads_final_list.txt");
+    Path path = Paths.get("ads_list.txt");
 
     byte[] bytes = null;
     try {
       bytes = Files.readAllBytes(path);
-    } 
-    catch (IOException ex) {
+    } catch (IOException ex) {
     }
     String varlist = new String(bytes, StandardCharsets.UTF_8);
     return varlist;
+  }
+
+  public static void removeduplicate() throws IOException {
+
+    PrintWriter pw = new PrintWriter("ads_final_list.txt");
+
+    BufferedReader br = new BufferedReader(new FileReader("ads_list.txt"));
+
+    String line = br.readLine();
+
+    HashSet<String> hs = new HashSet<String>();
+
+    while (line != null) {
+
+      if (hs.add(line))
+        pw.println(line);
+
+      line = br.readLine();
+
+    }
+
+    pw.flush();
+    br.close();
+    pw.close();
   }
 
   public static void downloadFiles() throws Exception {
